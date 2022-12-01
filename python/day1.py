@@ -10,7 +10,7 @@ import sys
 class Day1Solution(Aoc):
 
     def Run(self):
-        self.StartDay(1, "AOC")
+        self.StartDay(1, "Calorie Counting")
         self.ReadInput()
         self.PartA()
         self.PartB()
