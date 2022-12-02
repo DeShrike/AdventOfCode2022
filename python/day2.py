@@ -84,10 +84,7 @@ class Day2Solution(Aoc):
                 uix = towin[tix]
             else:           # win
                 uix = toloose[tix]
-            if tix == uix:
-                answer += uix + 1 + 3
-            else:
-                answer += uix + 1 + (6 if ((uix, tix) in beats) else 0)
+            answer += uix + 1 + g
 
         self.ShowAnswer(answer)
 
