@@ -69,7 +69,6 @@ class Day2Solution(Aoc):
         they = [ 'A', 'B', 'C' ]
         us = [ 'X', 'Y', 'Z' ]
         goal = [ 0,  3,  6]
-        beats = [(0,2), (2,1), (1,0)]
         towin = { 0:2, 2:1, 1:0 }
         toloose = { 0:1, 2:0, 1:2 }
         answer = 0
