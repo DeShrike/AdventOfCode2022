@@ -1,7 +1,4 @@
 from aoc import Aoc
-import itertools
-import math
-import re
 import sys
 
 # Day 3
@@ -42,15 +39,8 @@ class Day3Solution(Aoc):
 
     def TestDataB(self):
         self.inputdata.clear()
-        # self.TestDataA()    # If test data is same as test data for part A
-        testdata = \
-        """
-        1000
-        2000
-        3000
-        """
-        self.inputdata = [line.strip() for line in testdata.strip().split("\n")]
-        return None
+        self.TestDataA()    # If test data is same as test data for part A
+        return 70
 
     def prio(self, letter:str) -> int:
         return ord(letter) - 38 if ord(letter) <= 90 else ord(letter) - 96
@@ -65,14 +55,21 @@ class Day3Solution(Aoc):
             c2 = set(line[c:])
             common = list(c1.intersection(c2))[0]
             answer += self.prio(common)
+
         self.ShowAnswer(answer)
 
     def PartB(self):
         self.StartPartB()
 
-        # Add solution here
-
-        answer = None
+        answer = 0
+        for ix in range(len(self.inputdata) // 3):
+            c1 = set(self.inputdata[ix * 3 + 0])
+            c2 = set(self.inputdata[ix * 3 + 1])
+            c3 = set(self.inputdata[ix * 3 + 2])
+            common = c1.intersection(c2)
+            common = common.intersection(c3)
+            letter = list(common)[0]
+            answer += self.prio(letter)
 
         self.ShowAnswer(answer)
 
