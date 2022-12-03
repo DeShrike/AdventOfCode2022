@@ -1,7 +1,4 @@
 from aoc import Aoc
-import itertools
-import math
-import re
 import sys
 
 # Day 2
@@ -47,7 +44,7 @@ class Day2Solution(Aoc):
 
         they = [ 'A', 'B', 'C' ]
         us = [ 'X', 'Y', 'Z' ]
-        beats = [(0,2), (2,1), (1,0)]
+        beats = [(0, 2), (2, 1), (1, 0)]
 
         answer = 0
         for line in self.inputdata:
@@ -68,9 +65,9 @@ class Day2Solution(Aoc):
 
         they = [ 'A', 'B', 'C' ]
         us = [ 'X', 'Y', 'Z' ]
-        goal = [ 0,  3,  6]
-        towin = { 0:2, 2:1, 1:0 }
-        toloose = { 0:1, 2:0, 1:2 }
+        goal = [ 0, 3, 6 ]
+        towin = { 0: 2, 2: 1, 1: 0 }
+        toloose = { 0: 1, 2: 0, 1: 2 }
         answer = 0
         for line in self.inputdata:
             t, u = line.split(' ')
