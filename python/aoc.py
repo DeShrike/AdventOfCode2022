@@ -68,7 +68,7 @@ class Aoc():
 
         file = open(self.input_filename(), "r")
         for line in file:
-            self.inputdata.append(line.strip())
+            self.inputdata.append(line.rstrip())
         file.close()
 
     def input_filename(self):
