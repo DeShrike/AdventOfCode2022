@@ -20,11 +20,6 @@ class Folder():
     def total_size(self):
         return sum([ f.total_size() for f in self.folders ]) + self.total_file_size()
 
-    def total_size_parta(self, maximum:int):
-        # return sum([ f.total_size() for f in self.folders if f.total_size() <= maximum ])# + self.total_file_size()
-        s = sum([ f.total_size() for f in self.folders ]) + self.total_file_size()
-        return s if s < maximum else 0
-
     def add_folder(self, name:str) -> None:
         f = Folder(name)
         f.parent = self
@@ -40,7 +35,7 @@ class Folder():
         for f in self.folders:
             if f.name == name:
                 return f
-        print(f"CD in unknown folder {name}")
+        print(f"CD to unknown folder {name}")
         return None 
 
 class Day7Solution(Aoc):
@@ -95,15 +90,8 @@ class Day7Solution(Aoc):
 
     def TestDataB(self):
         self.inputdata.clear()
-        # self.TestDataA()    # If test data is same as test data for part A
-        testdata = \
-        """
-        1000
-        2000
-        3000
-        """
-        self.inputdata = [line.strip() for line in testdata.strip().split("\n")]
-        return None
+        self.TestDataA()    # If test data is same as test data for part A
+        return 24933642
 
     def count_part_a(self, folder):
         for f in folder.folders:
@@ -111,12 +99,15 @@ class Day7Solution(Aoc):
                 self.parta_size += f.total_size()
             self.count_part_a(f)
 
-    def PartA(self):
-        self.StartPartA()
+    def find_part_b(self, folder, needed):
+        for f in folder.folders:
+            if f.total_size() > needed:
+                self.candidates_b.append(f.total_size())
+            self.find_part_b(f, needed)
 
+    def build_filesystem(self) -> Folder:
         root = Folder("/")
         current = root
-
         for line in self.inputdata:
             m = re.match(r"\$ cd (.*)", line)
             if m:
@@ -145,6 +136,13 @@ class Day7Solution(Aoc):
                 name = m.group(2)
                 current.add_file(name, size)
 
+        return root
+
+    def PartA(self):
+        self.StartPartA()
+
+        root = self.build_filesystem()
+
         self.parta_size = 0
         self.count_part_a(root)
         answer = self.parta_size
@@ -154,9 +152,22 @@ class Day7Solution(Aoc):
     def PartB(self):
         self.StartPartB()
 
-        # Add solution here
+        disk_size = 70_000_000
+        minimum_needed = 30_000_000
+        root = self.build_filesystem()
+        used = root.total_size()
+        free = disk_size - used
+        needed = minimum_needed - free
 
-        answer = None
+        print(f"Disk size:   {disk_size}")
+        print(f"Used:        {used}")
+        print(f"Free:        {free}")
+        print(f"Update size: {minimum_needed}")
+        print(f"Should free: {needed}")
+
+        self.candidates_b = []
+        self.find_part_b(root, needed)
+        answer = min(self.candidates_b)
 
         self.ShowAnswer(answer)
 
