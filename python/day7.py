@@ -1,6 +1,4 @@
 from aoc import Aoc
-import itertools
-import math
 import re
 import sys
 
@@ -37,6 +35,12 @@ class Folder():
                 return f
         print(f"CD to unknown folder {name}")
         return None 
+
+    def all_folder_sizes(self):
+    	for f in self.folders:
+    		yield from f.all_folder_sizes()
+    	yield self.total_size()
+
 
 class Day7Solution(Aoc):
 
@@ -90,20 +94,8 @@ class Day7Solution(Aoc):
 
     def TestDataB(self):
         self.inputdata.clear()
-        self.TestDataA()    # If test data is same as test data for part A
+        self.TestDataA()
         return 24933642
-
-    def count_part_a(self, folder):
-        for f in folder.folders:
-            if f.total_size() < 100_000:
-                self.parta_size += f.total_size()
-            self.count_part_a(f)
-
-    def find_part_b(self, folder, needed):
-        for f in folder.folders:
-            if f.total_size() > needed:
-                self.candidates_b.append(f.total_size())
-            self.find_part_b(f, needed)
 
     def build_filesystem(self) -> Folder:
         root = Folder("/")
@@ -112,7 +104,6 @@ class Day7Solution(Aoc):
             m = re.match(r"\$ cd (.*)", line)
             if m:
                 name = m.group(1)
-                # print(f"CD {name}")
                 if name == "/":
                     current = root
                 elif name == "..":
@@ -122,7 +113,6 @@ class Day7Solution(Aoc):
 
             m = re.match(r"\$ ls", line)
             if m:
-                #print("LS")
                 pass
 
             m = re.match(r"dir (.*)", line)
@@ -142,10 +132,7 @@ class Day7Solution(Aoc):
         self.StartPartA()
 
         root = self.build_filesystem()
-
-        self.parta_size = 0
-        self.count_part_a(root)
-        answer = self.parta_size
+        answer = sum([size for size in root.all_folder_sizes() if size < 100_000])
 
         self.ShowAnswer(answer)
 
@@ -165,9 +152,7 @@ class Day7Solution(Aoc):
         print(f"Update size: {minimum_needed}")
         print(f"Should free: {needed}")
 
-        self.candidates_b = []
-        self.find_part_b(root, needed)
-        answer = min(self.candidates_b)
+        answer = min([size for size in root.all_folder_sizes() if size > needed])
 
         self.ShowAnswer(answer)
 
