@@ -10,7 +10,7 @@ import sys
 class Day8Solution(Aoc):
 
     def Run(self):
-        self.StartDay(8, "AOC")
+        self.StartDay(8, "Treetop Tree House")
         self.ReadInput()
         self.PartA()
         self.PartB()
