@@ -1,4 +1,5 @@
 from aoc import Aoc
+from canvas import Canvas
 import itertools
 import math
 import re
@@ -135,12 +136,25 @@ class Day9Solution(Aoc):
                     self.rope[t][0] += moves["U"][0]
                     self.rope[t][1] += moves["U"][1]
 
+    def addsquare(self, canvas: Canvas, x: int, y: int, mult: int, color):
+        x = x * mult
+        y = y * mult
+        for xx in range(mult):
+            for yy in range(mult):
+                canvas.set_pixel(x + xx, y + yy, color)
+
+
     def PartB(self):
         self.StartPartB()
 
         positions = set()
         self.rope_length = 10
-        self.rope = [[0, 0] for _ in range(self.rope_length)]
+        self.rope = [[166, 275] for _ in range(self.rope_length)]
+
+        minx = 1_000_000
+        maxx = -1_000_000
+        miny = 1_000_000
+        maxy = -1_000_000
 
         for line in self.inputdata:
             direction = line.split(" ")[0]
@@ -148,6 +162,23 @@ class Day9Solution(Aoc):
             for _ in range(steps):
                 self.step_rope(direction)
                 positions.add((self.rope[-1][0], self.rope[-1][1]))
+
+                minx = min(minx, self.rope[0][0])
+                maxx = max(maxx, self.rope[0][0])
+                miny = min(miny, self.rope[0][1])
+                maxy = max(maxy, self.rope[0][1])
+
+        print(f"Min: {minx},{miny} Max: {maxx},{maxy}")
+        mult = 2
+        canvas = Canvas(maxx * mult, maxy * mult)
+        for pos in positions:
+            self.addsquare(canvas, pos[0], pos[1], mult, (255, 255, 255))
+        for pos in self.rope:
+            self.addsquare(canvas, pos[0], pos[1], mult, (0, 0, 255))
+        self.addsquare(canvas, self.rope[0][0], self.rope[0][1], mult, (255, 0, 0))
+
+        print("Saving")
+        canvas.save_PNG("day9.png")
 
         answer = len(positions)
 
