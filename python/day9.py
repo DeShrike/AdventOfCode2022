@@ -58,17 +58,6 @@ class Day9Solution(Aoc):
         self.inputdata = [line.strip() for line in testdata.strip().split("\n")]
         return 36
 
-    def head_9by9(self):
-        yield (self.hx-1, self.hy-1)
-        yield (self.hx  , self.hy-1)
-        yield (self.hx+1, self.hy-1)
-        yield (self.hx-1, self.hy)
-        yield (self.hx  , self.hy)
-        yield (self.hx+1, self.hy)
-        yield (self.hx-1, self.hy+1)
-        yield (self.hx  , self.hy+1)
-        yield (self.hx+1, self.hy+1)
-
     def sq9by9(self, x: int, y: int):
         yield (x - 1, y - 1)
         yield (x    , y - 1)
@@ -79,6 +68,9 @@ class Day9Solution(Aoc):
         yield (x - 1, y + 1)
         yield (x    , y + 1)
         yield (x + 1, y + 1)
+
+    def head_9by9(self):
+        yield from self.sq9by9(self.hx, self.hy)
 
     def istouching(self) -> bool:
         return (self.tx, self.ty) in list(self.head_9by9())
@@ -91,23 +83,19 @@ class Day9Solution(Aoc):
         self.hx += moves[direction][0]
         self.hy += moves[direction][1]
         if not self.istouching():
-            if self.tx == self.hx or self.ty == self.hy:    # orthogonal
-                self.tx += moves[direction][0]
-                self.ty += moves[direction][1]
-            else:                                           # diagonal
-                if self.tx < self.hx:
-                    self.tx += moves["R"][0]
-                    self.ty += moves["R"][1]
-                else:
-                    self.tx += moves["L"][0]
-                    self.ty += moves["L"][1]
+            if self.tx < self.hx:
+                self.tx += moves["R"][0]
+                self.ty += moves["R"][1]
+            elif self.tx > self.hx:
+                self.tx += moves["L"][0]
+                self.ty += moves["L"][1]
 
-                if self.ty < self.hy:
-                    self.tx += moves["D"][0]
-                    self.ty += moves["D"][1]
-                else:
-                    self.tx += moves["U"][0]
-                    self.ty += moves["U"][1]
+            if self.ty < self.hy:
+                self.tx += moves["D"][0]
+                self.ty += moves["D"][1]
+            elif self.ty > self.hy:
+                self.tx += moves["U"][0]
+                self.ty += moves["U"][1]
 
     def PartA(self):
         self.StartPartA()
@@ -133,7 +121,19 @@ class Day9Solution(Aoc):
         for h in range(self.rope_length - 1):
             t = h + 1
             if not self.is_touching(*self.rope[h], *self.rope[t]):
-                pass
+                if self.rope[t][0] < self.rope[h][0]:
+                    self.rope[t][0] += moves["R"][0]
+                    self.rope[t][1] += moves["R"][1]
+                elif self.rope[t][0] > self.rope[h][0]:
+                    self.rope[t][0] += moves["L"][0]
+                    self.rope[t][1] += moves["L"][1]
+
+                if self.rope[t][1] < self.rope[h][1]:
+                    self.rope[t][0] += moves["D"][0]
+                    self.rope[t][1] += moves["D"][1]
+                elif self.rope[t][1] > self.rope[h][1]:
+                    self.rope[t][0] += moves["U"][0]
+                    self.rope[t][1] += moves["U"][1]
 
     def PartB(self):
         self.StartPartB()
@@ -148,7 +148,6 @@ class Day9Solution(Aoc):
             for _ in range(steps):
                 self.step_rope(direction)
                 positions.add((self.rope[-1][0], self.rope[-1][1]))
-
 
         answer = len(positions)
 
