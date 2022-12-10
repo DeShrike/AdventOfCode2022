@@ -182,14 +182,7 @@ class Day10Solution(Aoc):
 
     def TestDataB(self):
         self.inputdata.clear()
-        # self.TestDataA()    # If test data is same as test data for part A
-        testdata = \
-        """
-        1000
-        2000
-        3000
-        """
-        self.inputdata = [line.strip() for line in testdata.strip().split("\n")]
+        self.TestDataA()    # If test data is same as test data for part A
         return None
 
     def PartA(self):
@@ -199,7 +192,6 @@ class Day10Solution(Aoc):
         X = 1
         cycle = 0
         for line in self.inputdata:
-            # print(line)
             if line == "noop":
                 cycle += 1
                 if cycle in [20, 60, 100, 140, 180, 220]:
@@ -209,25 +201,52 @@ class Day10Solution(Aoc):
                 value = int(line.split(" ")[1])
                 cycle += 1
                 if cycle in [20, 60, 100, 140, 180, 220]:
-                    print(f"Cycle H {cycle}: {X}    {(cycle * X)}")
+                    print(f"Cycle {cycle}: {X}    {(cycle * X)}")
                     answer += (cycle * X)
                 cycle += 1
                 if cycle in [20, 60, 100, 140, 180, 220]:
-                    print(f"Cycle H {cycle}: {X}    {(cycle * X)}")
+                    print(f"Cycle {cycle}: {X}    {(cycle * X)}")
                     answer += (cycle * X)
                 X += value
 
-
-
-
         self.ShowAnswer(answer)
+
+    def do_cycle(self, screen, x:int, y:int, X:int, cycle:int, width:int) -> int:
+        if X == x - 1 or X == x or X == x + 1:
+            screen[y][x] = 1
+        cycle += 1
+        x += 1
+        if x >= width:
+            x = 0
+            y += 1
+        return cycle, x, y
 
     def PartB(self):
         self.StartPartB()
 
-        # Add solution here
+        X = 1
+        cycle = 0
+        width = 40
+        height = 6
+        x = 0
+        y = 0
+        screen = [[ 0 for _ in range(width)] for _ in range(height)]
 
-        answer = None
+        for line in self.inputdata:
+            if line == "noop":
+                cycle, x, y = self.do_cycle(screen, x, y, X, cycle, width)
+            else:
+                value = int(line.split(" ")[1])
+                cycle, x, y = self.do_cycle(screen, x, y, X, cycle, width)
+                cycle, x, y = self.do_cycle(screen, x, y, X, cycle, width)
+                X += value
+
+        for y in range(height):
+            for x in range(width):
+                print("#" if screen[y][x] else ".", end="")
+            print("")
+
+        answer = "BACEKLHF"
 
         self.ShowAnswer(answer)
 
