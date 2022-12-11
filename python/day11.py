@@ -1,3 +1,4 @@
+from math import gcd
 from aoc import Aoc
 import itertools
 import math
@@ -30,12 +31,16 @@ class Monkey():
     def set_iffalse(self, val:int) -> None:
         self.iffalse = val
 
-    def set_items(self, items: str) -> None:
+    def set_items(self, items:str) -> None:
         self.items = [int(x) for x in items.split(",")]
 
-    def set_operation(self, maal: int, plus: int) -> None:
+    def add_item(self, v:int) -> None:
+        self.items.append(v)
+
+    def set_operation(self, maal:int, plus:int) -> None:
         self.operation_maal = maal
         self.operation_plus = plus
+
 
 class Day11Solution(Aoc):
 
@@ -93,15 +98,8 @@ class Day11Solution(Aoc):
 
     def TestDataB(self):
         self.inputdata.clear()
-        # self.TestDataA()    # If test data is same as test data for part A
-        testdata = \
-        """
-        1000
-        2000
-        3000
-        """
-        self.inputdata = [line.strip() for line in testdata.strip().split("\n")]
-        return None
+        self.TestDataA()
+        return 2713310158
 
     def parse_input(self):
         mm = {}
@@ -136,7 +134,7 @@ class Day11Solution(Aoc):
                 mo.set_iffalse(int(m.group(1)))
         return mm
 
-    def do_round(self, monkeys):
+    def do_round(self, monkeys, divide3: bool = True):
         for _, m in monkeys.items():
             while len(m.items) > 0:
                 item = m.items.pop(0)
@@ -145,35 +143,48 @@ class Day11Solution(Aoc):
                     item = item * item
                 else:
                     item = (item * m.operation_maal) + m.operation_plus
-                item = item // 3
+                if divide3:
+                    item = item // 3
                 if item % m.divider == 0:
-                    monkeys[m.iftrue].items.append(item)
+                    monkeys[m.iftrue].add_item(item)
                 else:
-                    monkeys[m.iffalse].items.append(item)
+                    monkeys[m.iffalse].add_item(item)
         pass
 
     def PartA(self):
         self.StartPartA()
 
         monkeys = self.parse_input()
-        #print(monkeys)
         for _ in range(20):
             self.do_round(monkeys)
-
-        # for _, m in monkeys.items():
-        #     print(f"{m.id} > {m.inspections}")
 
         inspected = sorted([m.inspections for _, m in monkeys.items()], reverse=True)
         answer = inspected[0] * inspected[1]
 
         self.ShowAnswer(answer)
 
+    def simplyfy(self, monkeys, mod):
+        for _, m in monkeys.items():
+            if len(m.items) > 0:
+                for ix, v in enumerate(m.items):
+                    m.items[ix] = v % mod
+
     def PartB(self):
         self.StartPartB()
 
-        # Add solution here
+        monkeys = self.parse_input()
 
-        answer = None
+        dividers = [m.divider for _, m in monkeys.items()]
+        modulus = 1
+        for div in dividers:
+            modulus *= div
+
+        for _ in range(10_000):
+            self.do_round(monkeys, False)
+            self.simplyfy(monkeys, modulus)
+
+        inspected = sorted([m.inspections for _, m in monkeys.items()], reverse=True)
+        answer = inspected[0] * inspected[1]
 
         self.ShowAnswer(answer)
 
