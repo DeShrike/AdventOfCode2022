@@ -1,4 +1,5 @@
 from aoc import Aoc
+from canvas import Canvas
 import sys
 
 # Day 12
@@ -146,6 +147,13 @@ class Day12Solution(Aoc):
         self.TestDataA()
         return 29
 
+    def addsquare(self, canvas: Canvas, x: int, y: int, mult: int, color):
+        x = x * mult
+        y = y * mult
+        for xx in range(mult):
+            for yy in range(mult):
+                canvas.set_pixel(x + xx, y + yy, color)
+
     def PartA(self):
         self.StartPartA()
 
@@ -155,6 +163,21 @@ class Day12Solution(Aoc):
         print(f"Height: {d.height}")
 
         p = d.run()
+
+        mult = 2
+        canvas = Canvas(d.width * mult, d.height * mult)
+        for k, node in d.graph.items():
+            color = (255 // 26) * node.weight
+            self.addsquare(canvas, k[0], k[1], mult, (color, color, color))
+
+        for pos in p:
+            node = pos
+            color = (255 // 26) * node.weight
+            self.addsquare(canvas, node.x, node.y, mult, (color, 0, 0))
+
+        print("Saving")
+        canvas.save_PNG("day12.png")
+
         answer = len(p)
 
         self.ShowAnswer(answer)
@@ -162,6 +185,7 @@ class Day12Solution(Aoc):
     def PartB(self):
         self.StartPartB()
 
+        answer = None
         d = Dykstra(self.inputdata)
         starts = [k for k,v in d.graph.items() if v.weight == 1 and v.has_climbing_neigbors()]
         print(len(starts))
