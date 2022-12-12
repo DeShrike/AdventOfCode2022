@@ -1,7 +1,4 @@
 from aoc import Aoc
-import itertools
-import math
-import re
 import sys
 
 # Day 12
@@ -26,11 +23,19 @@ class Dykstra:
             self.dist = 1_000_000_000
             self.prev = None
 
+        def has_climbing_neigbors(self) -> bool:
+            return any([n for n in self.neighbors if n.weight == self.weight + 1])
+
         def __repr__(self):
             s = f"Node({self.x}, {self.y}, {self.weight})\n"
             for n in self.neighbors:
                 s += f"  N: {n.x}, {n.y}\n"
             return s
+
+    def reset(self):
+        for k, node in self.graph.items():
+            node.dist = 1_000_000_000
+            node.prev = None
 
     def prepare_graph(self, mat):
         graph = {}
@@ -67,13 +72,11 @@ class Dykstra:
                     yield this
 
     def smallest(self, lijst):
-        d = 1_000_000
-        i = None
-        for node in lijst:
-            if node.dist < d:
-                d = node.dist
-                i = node
-        return i
+        if len(lijst) == 0:
+            return None
+        lijst.sort(key=lambda n: n.dist)
+
+        return lijst[0]
 
     def run(self):
         graph = self.graph
@@ -83,7 +86,9 @@ class Dykstra:
         start.dist = 0
 
         while len(Q) > 0:
-            u = self.smallest(Q)
+            u = self.smallest([ n for n in Q if n.dist != 1_000_000_000 ])
+            if u is None:
+                return None
             Q.remove(u)
 
             if self.equal(u, end):
@@ -138,7 +143,7 @@ class Day12Solution(Aoc):
 
     def TestDataB(self):
         self.inputdata.clear()
-        self.TestDataA()    # If test data is same as test data for part A
+        self.TestDataA()
         return 29
 
     def PartA(self):
@@ -157,9 +162,24 @@ class Day12Solution(Aoc):
     def PartB(self):
         self.StartPartB()
 
-        # Add solution here
+        d = Dykstra(self.inputdata)
+        starts = [k for k,v in d.graph.items() if v.weight == 1 and v.has_climbing_neigbors()]
+        print(len(starts))
 
-        answer = None
+        lengths = []
+
+        for ix, start in enumerate(starts):
+            print(f"{ix}/{len(starts)} -> {start}")
+            d.reset()
+            d.start = d.graph[start]
+            p = d.run()
+            if p is None:
+                print("No path")
+                continue
+            print(len(p))
+            lengths.append(len(p))
+
+        answer = min(lengths)
 
         self.ShowAnswer(answer)
 
