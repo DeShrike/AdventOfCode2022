@@ -1,3 +1,4 @@
+from struct import pack
 from aoc import Aoc
 import itertools
 import math
@@ -8,13 +9,14 @@ import sys
 # https://adventofcode.com/2022
 
 class Packet():
-    def __init__(self, line:str):
+    def __init__(self, line:str, marker:bool = False):
         self.value = None
         self.array = []
         self.empty = False
         self.parse(line)
         self.forcefalse = False
         self.parent = None
+        self.marker = marker
 
     def __str__(self) -> str:
         if self.empty:
@@ -64,7 +66,7 @@ class Packet():
                 self.array.append(p)
 
     def __lt__(self, other):
-        print(f"Compare: {self} v {other}")
+        # print(f"Compare: {self} v {other}")
         # a = input()
         if self.empty and not other.empty:
             return True
@@ -76,7 +78,7 @@ class Packet():
         elif self.value is not None and other.value is not None:
             if self.value > other.value:
                 self.parent.forcefalse = True
-                print("set forcefalse")
+                # print("set forcefalse")
             return self.value < other.value
         elif self.value is None and other.value is not None:
             # convert other to list
@@ -87,17 +89,17 @@ class Packet():
             self.convert_to_array()
             return self < other
         else:
-            print("zipping")
+            # print("zipping")
             for a, b in zip(self.array, other.array):
                 if a < b:
                     return True
                 if self.forcefalse:
                     if self.parent is not None:
                         self.parent.forcefalse = True
-                    print("forcefalse")
+                    # print("forcefalse")
                     return False
             if len(self.array) < len(other.array):
-                print(f"array smaller  {len(self.array)} v {len(other.array)}")
+                # print(f"array smaller  {len(self.array)} v {len(other.array)}")
                 return True
             elif len(self.array) > len(other.array):
                 self.forcefalse = True
@@ -109,7 +111,7 @@ class Packet():
 class Day13Solution(Aoc):
 
     def Run(self):
-        self.StartDay(13, "AOC")
+        self.StartDay(13, "Distress Signal")
         self.ReadInput()
         self.PartA()
         self.PartB()
@@ -153,26 +155,13 @@ class Day13Solution(Aoc):
         [1,[2,[3,[4,[5,6,7]]]],8,9]
         [1,[2,[3,[4,[5,6,0]]]],8,9]
         """
-
-        testdata = \
-        """
-        [[[4],[[9,9,4,10,8],[2,2,4,8,5],10,[4,4,10,7,2]],5,7,7]]
-        [[0,[[3,3,7],6,2,2],9,[[9,3,1,6],[8,10]],0],[[4,[9,7,2,3]],4,0]]
-        """
         self.inputdata = [line.strip() for line in testdata.strip().split("\n")]
         return 13
 
     def TestDataB(self):
         self.inputdata.clear()
-        # self.TestDataA()    # If test data is same as test data for part A
-        testdata = \
-        """
-        1000
-        2000
-        3000
-        """
-        self.inputdata = [line.strip() for line in testdata.strip().split("\n")]
-        return None
+        self.TestDataA()
+        return 140
 
     def PartA(self):
         self.StartPartA()
@@ -195,12 +184,12 @@ class Day13Solution(Aoc):
                 else:
                     pr = p
 
-        print(len(pairs))
+        # print(len(pairs))
 
-        for pair in pairs:
-            print(f"Left: {str(pair['left'])}")
-            print(f"Right: {str(pair['right'])}")
-            print("")
+        # for pair in pairs:
+        #     print(f"Left: {str(pair['left'])}")
+        #     print(f"Right: {str(pair['right'])}")
+        #     print("")
 
         # Add solution here
         # for i in range(len(pairs)):
@@ -226,9 +215,30 @@ class Day13Solution(Aoc):
     def PartB(self):
         self.StartPartB()
 
-        # Add solution here
+        packets = []
+        for line in self.inputdata:
+            line = line.strip()
+            if line != "":
+                packets.append(Packet(line))
 
-        answer = None
+        packets.append(Packet("[[2]]", True))
+        packets.append(Packet("[[6]]", True))
+
+        # print(len(packets))
+        
+        # Bubblesort
+        switched = True
+        while switched:
+            switched = False
+            for i in range(len(packets) - 1):
+                if packets[i + 1] < packets[i]:
+                    packets[i], packets[i + 1] = packets[i + 1], packets[i]
+                    switched = True
+
+        answer = 1
+        for ix, p in enumerate(packets):
+            if p.marker:
+                answer *= (ix + 1)
 
         self.ShowAnswer(answer)
 
