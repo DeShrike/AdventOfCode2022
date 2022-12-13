@@ -13,14 +13,22 @@ class Packet():
         self.array = []
         self.empty = False
         self.parse(line)
-    
+        self.forcefalse = False
+        self.parent = None
+
     def __str__(self) -> str:
         if self.empty:
-            return ""
+            return "E"
         elif self.value is not None:
             return str(self.value)
         else:
             return "[" + ",".join([str(i) for i in  self.array]) + "]"
+
+    def convert_to_array(self):
+        p = Packet(f"{self.value}")
+        p.parent = self
+        self.array.append(p)
+        self.value = None
 
     def split(self, line:str):
         ina = 0
@@ -51,9 +59,53 @@ class Packet():
             line = line[1:-1]
             parts = self.split(line)
             for part in parts:
-                self.array.append(Packet(part))
+                p = Packet(part)
+                p.parent = self
+                self.array.append(p)
 
+    def __lt__(self, other):
+        print(f"Compare: {self} v {other}")
+        # a = input()
+        if self.empty and not other.empty:
+            return True
+        elif not self.empty and other.empty:
+            self.forcefalse = True
+            if self.parent is not None:
+                self.parent.forcefalse = True
+            return False
+        elif self.value is not None and other.value is not None:
+            if self.value > other.value:
+                self.parent.forcefalse = True
+                print("set forcefalse")
+            return self.value < other.value
+        elif self.value is None and other.value is not None:
+            # convert other to list
+            other.convert_to_array()
+            return self < other
+        elif self.value is not None and other.value is None:
+            # convert self to list
+            self.convert_to_array()
+            return self < other
+        else:
+            print("zipping")
+            for a, b in zip(self.array, other.array):
+                if a < b:
+                    return True
+                if self.forcefalse:
+                    if self.parent is not None:
+                        self.parent.forcefalse = True
+                    print("forcefalse")
+                    return False
+            if len(self.array) < len(other.array):
+                print(f"array smaller  {len(self.array)} v {len(other.array)}")
+                return True
+            elif len(self.array) > len(other.array):
+                self.forcefalse = True
+                if self.parent is not None:
+                    self.parent.forcefalse = True
 
+            return False
+        
 class Day13Solution(Aoc):
 
     def Run(self):
@@ -101,6 +153,12 @@ class Day13Solution(Aoc):
         [1,[2,[3,[4,[5,6,7]]]],8,9]
         [1,[2,[3,[4,[5,6,0]]]],8,9]
         """
+
+        testdata = \
+        """
+        [[[4],[[9,9,4,10,8],[2,2,4,8,5],10,[4,4,10,7,2]],5,7,7]]
+        [[0,[[3,3,7],6,2,2],9,[[9,3,1,6],[8,10]],0],[[4,[9,7,2,3]],4,0]]
+        """
         self.inputdata = [line.strip() for line in testdata.strip().split("\n")]
         return 13
 
@@ -119,6 +177,7 @@ class Day13Solution(Aoc):
     def PartA(self):
         self.StartPartA()
 
+        answer = None
         self.inputdata.append("")
         pairs = []
         pl = None
@@ -136,14 +195,31 @@ class Day13Solution(Aoc):
                 else:
                     pr = p
 
+        print(len(pairs))
+
         for pair in pairs:
             print(f"Left: {str(pair['left'])}")
             print(f"Right: {str(pair['right'])}")
             print("")
 
         # Add solution here
+        # for i in range(len(pairs)):
+            # i = 81 ???  138 ????
+        # i = 138
+        # print(f"*************************************** {i}")
+        # a = input()
+        # t = i + 1
+        # if pairs[t - 1]["left"] < pairs[t - 1]["right"]:
+        #     print("Smaller")
+        # else:
+        #     print("NOT smaller")
 
-        answer = None
+        # sm = [ ix + 1 for ix, p in enumerate(pairs) if p["left"] < p["right"]]
+        # print(sm)
+        answer = sum([ ix + 1 for ix, p in enumerate(pairs) if p["left"] < p["right"]])
+
+        # Attempt 1: 7854 is too high
+        # Attempt 2: 6240 is too high
 
         self.ShowAnswer(answer)
 
