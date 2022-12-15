@@ -62,7 +62,7 @@ class Day15Solution(Aoc):
         Sensor at x=20, y=1: closest beacon is at x=15, y=3
         """
         self.inputdata = [line.strip() for line in testdata.strip().split("\n")]
-        self.row_to_test = 10
+        self.row_to_test = 11
         return 26
 
     def TestDataB(self):
@@ -102,12 +102,14 @@ class Day15Solution(Aoc):
         for ix, s in enumerate(sensors):
             elevation = abs(s.pos[1] - self.row_to_test)
             print(f"{ix} -> {elevation}")
+            if s.distance - elevation < 0:
+                continue
             stuk = (s.pos[0] - (s.distance - elevation), s.pos[0] + (s.distance - elevation))
             if stuk[1] < stuk[0]:
                 stuk = (stuk[1], stuk[0])
             stukken.append(stuk)
         
-            stukken.sort(key=lambda x: x[0])
+        stukken.sort(key=lambda x: x[0])
         print(stukken)
 
         runs = []
@@ -145,21 +147,24 @@ class Day15Solution(Aoc):
 
         answer = positions
 
-        for y in range(-12, 28):
-            print(f"{y:3} ", end="")
-            count = 0
-            for x in range(-10, 30):
-                letter = "."
-                for ix, s in enumerate(sensors):
-                    if s.pos == (x, y):
-                        letter = "S"
-                    elif s.beacon == (x,y):
-                        letter = 'B'
-                    elif dist(s.pos, (x, y)) <= s.distance:
-                        letter = "+"
-                count += 1 if letter == "+" else 0
-                print(letter, end="")
-            print(f"  -> {count}")
+        # for y in range(-12, 28):
+        #     print(f"{y:3} ", end="")
+        #     count = 0
+        #     for x in range(-10, 30):
+        #         letter = "."
+        #         for ix, s in enumerate(sensors):
+        #             if ix != 4:
+        #                 continue
+        #             if s.pos == (x, y):
+        #                 letter = "S"
+        #             elif s.beacon == (x,y):
+        #                 letter = 'B'
+        #             elif dist(s.pos, (x, y)) <= s.distance:
+        #                 letter = "+"
+        #         count += 1 if letter == "+" else 0
+        #         print(letter, end="")
+        #     print(f"  -> {count}")
+
         # Attempt 1: 6438941 is too high
 
         self.ShowAnswer(answer)
