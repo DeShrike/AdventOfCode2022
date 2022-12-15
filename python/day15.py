@@ -67,15 +67,8 @@ class Day15Solution(Aoc):
 
     def TestDataB(self):
         self.inputdata.clear()
-        # self.TestDataA()    # If test data is same as test data for part A
-        testdata = \
-        """
-        1000
-        2000
-        3000
-        """
-        self.inputdata = [line.strip() for line in testdata.strip().split("\n")]
-        return None
+        self.TestDataA()
+        return 56000011
 
     def parse_input(self):
         sensors = []
@@ -91,13 +84,7 @@ class Day15Solution(Aoc):
 
         return sensors
 
-    def PartA(self):
-        self.StartPartA()
-
-        sensors = self.parse_input()
-        for ix, s in enumerate(sensors):
-            print(ix, s)
-
+    def calc_stukken(self, sensors):
         stukken = []
         for ix, s in enumerate(sensors):
             elevation = abs(s.pos[1] - self.row_to_test)
@@ -110,8 +97,10 @@ class Day15Solution(Aoc):
             stukken.append(stuk)
         
         stukken.sort(key=lambda x: x[0])
-        print(stukken)
+        # print(stukken)
+        return stukken
 
+    def calc_runs(self, stukken)
         runs = []
         vanaf = stukken[0][0]
         running = stukken[0][1]
@@ -123,27 +112,38 @@ class Day15Solution(Aoc):
                 vanaf = stuk[0]
                 running = stuk[1]
         runs.append((vanaf, running))
+        return runs
 
-        print("Runs:")
-        print(runs)
+    def PartA(self):
+        self.StartPartA()
 
-        positions = 0
-        for run in runs:
-            print(f"{run} Run size: {run[1] - run[0] + 1}")
-            positions += (run[1] - run[0] + 1)
+        sensors = self.parse_input()
+        # for ix, s in enumerate(sensors):
+        #     print(ix, s)
 
-        print(f"Positions A: {positions}")
+        stukken = self.calc_stukken(sensors)
+        runs = self.calc_runs(stukken)
+
+        # print("Runs:")
+        # print(runs)
+
+        # positions = 0
+        # for run in runs:
+        #     print(f"{run} Run size: {run[1] - run[0] + 1}")
+        #     positions += (run[1] - run[0] + 1)
+
+        # print(f"Positions A: {positions}")
 
         beaconsonrow = set()
         for s in sensors:
             if s.beacon[1] == self.row_to_test:
                 beaconsonrow.add(s.beacon)
 
-        print(f"beaconsonrow: {beaconsonrow}")
+        # print(f"beaconsonrow: {beaconsonrow}")
 
         positions -= len(beaconsonrow)
 
-        print(f"Positions B: {positions}")
+        # print(f"Positions B: {positions}")
 
         answer = positions
 
@@ -172,7 +172,17 @@ class Day15Solution(Aoc):
     def PartB(self):
         self.StartPartB()
 
-        # Add solution here
+        sensors = self.parse_input()
+
+        for y in range(4_000_000):
+            if y % 100 == 0:
+                print(y)
+            self.row_to_test = y
+            stukken = self.calc_stukken(sensors)
+            runs = self.calc_runs(stukken)
+            if len(runs) > 1:
+                print(runs)
+                break
 
         answer = None
 
