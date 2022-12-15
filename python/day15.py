@@ -28,6 +28,7 @@ class Day15Solution(Aoc):
         self.StartDay(15, "Beacon Exclusion Zone")
         self.ReadInput()
         self.row_to_test = 2_000_000
+        self.rows_to_check = 4_000_000
         self.PartA()
         self.PartB()
 
@@ -68,6 +69,7 @@ class Day15Solution(Aoc):
     def TestDataB(self):
         self.inputdata.clear()
         self.TestDataA()
+        self.rows_to_check = 20
         return 56000011
 
     def parse_input(self):
@@ -88,7 +90,7 @@ class Day15Solution(Aoc):
         stukken = []
         for ix, s in enumerate(sensors):
             elevation = abs(s.pos[1] - self.row_to_test)
-            print(f"{ix} -> {elevation}")
+            # print(f"{ix} -> {elevation}")
             if s.distance - elevation < 0:
                 continue
             stuk = (s.pos[0] - (s.distance - elevation), s.pos[0] + (s.distance - elevation))
@@ -100,7 +102,7 @@ class Day15Solution(Aoc):
         # print(stukken)
         return stukken
 
-    def calc_runs(self, stukken)
+    def calc_runs(self, stukken):
         runs = []
         vanaf = stukken[0][0]
         running = stukken[0][1]
@@ -127,10 +129,10 @@ class Day15Solution(Aoc):
         # print("Runs:")
         # print(runs)
 
-        # positions = 0
-        # for run in runs:
-        #     print(f"{run} Run size: {run[1] - run[0] + 1}")
-        #     positions += (run[1] - run[0] + 1)
+        positions = 0
+        for run in runs:
+            # print(f"{run} Run size: {run[1] - run[0] + 1}")
+            positions += (run[1] - run[0] + 1)
 
         # print(f"Positions A: {positions}")
 
@@ -174,17 +176,21 @@ class Day15Solution(Aoc):
 
         sensors = self.parse_input()
 
-        for y in range(4_000_000):
-            if y % 100 == 0:
-                print(y)
+        answer = None
+
+        for y in range(self.rows_to_check):
+            if y % 1000 == 0:
+                print(y, end="\r")
             self.row_to_test = y
             stukken = self.calc_stukken(sensors)
             runs = self.calc_runs(stukken)
-            if len(runs) > 1:
-                print(runs)
-                break
-
-        answer = None
+            # print(y, runs)
+            if len(runs) == 2:
+                if runs[0][1] == runs[1][0] - 2:
+                    print(y, runs)
+                    x = runs[0][1] + 1
+                    answer = x * 4_000_000 + y
+                    break
 
         self.ShowAnswer(answer)
 
