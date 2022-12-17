@@ -205,15 +205,33 @@ class Day17Solution(Aoc):
                     repeat_blocks = rockcount - extra_blocks
                     break
         
-        #fallen = extra_blocks + 
+        tall_so_far = exta + repeat
+        fallen = extra_blocks + repeat_blocks
+        to_go = self.rocks_to_fall - fallen
+
+        repeats = to_go // repeat_blocks
+        fallen += repeats * repeat_blocks
+        tall_so_far += repeats * repeat
+        to_go -= repeats * repeat_blocks
+        print(f"Fallen {fallen} To GO: {to_go} TallSoFar: {tall_so_far} ")
+
+        self.grid = [[0 for _ in range(self.width)] for _ in range(7)]
+        self.tall = 0
+        self.grid = [[0 for _ in range(self.width)] for _ in range(7)]
+        self.height = len(self.grid)
+        while fallen < self.rocks_to_fall:
+            self.fall_rock()
+            fallen += 1
+
+        tall_so_far += self.tall
 
         print(f"Extra Block: {extra_blocks}")
         print(f"Repeat Block: {repeat_blocks}")
 
-        r = self.rocks_to_fall // repeat_blocks
-        totaal_lijnen = r * repeat + exta + 1
+        # r = self.rocks_to_fall // repeat_blocks
+        # totaal_lijnen = r * repeat + exta + 1
 
-        answer = totaal_lijnen - 1
+        answer = tall_so_far
 
         # for i in range(self.height - 1, -1, -1):
         #     for j in range(self.width):
@@ -224,6 +242,7 @@ class Day17Solution(Aoc):
         # Attempt 2: 1548899754057 is too low
         # Attempt 3: 1553982300128 is too low
         # Attempt 4: 1554899645942 is wrong 
+        # Attempt 5: 1554899645804 is wrong
 
         self.ShowAnswer(answer)
 
