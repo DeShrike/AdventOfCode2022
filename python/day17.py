@@ -42,17 +42,21 @@ class Day17Solution(Aoc):
     def Run(self):
         self.StartDay(17, "Pyroclastic Flow")
         self.ReadInput()
+        self.rocks_to_fall = 2022
         self.PartA()
+        self.rocks_to_fall = 1_000_000_000_000
         self.PartB()
 
     def Test(self):
         self.StartDay(17)
 
         goal = self.TestDataA()
+        self.rocks_to_fall = 2022
         self.PartA()
         self.Assert(self.GetAnswerA(), goal)
 
         goal = self.TestDataB()
+        self.rocks_to_fall = 1_000_000_000_000
         self.PartB()
         self.Assert(self.GetAnswerB(), goal)
 
@@ -63,13 +67,11 @@ class Day17Solution(Aoc):
         >>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>
         """
         self.inputdata = [line.strip() for line in testdata.strip().split("\n")]
-        self.rocks_to_fall = 2022
         return 3068
 
     def TestDataB(self):
         self.inputdata.clear()
         self.TestDataA()
-        self.rocks_to_fall = 1_000_000_000_000
         return 1514285714288
 
     def get_wind_dir(self):
@@ -131,7 +133,7 @@ class Day17Solution(Aoc):
         self.height = len(self.grid)
         self.windindex = 0
         self.rock_index = 0
-        for i in range(self.rocks_to_fall):
+        for _ in range(self.rocks_to_fall):
             self.fall_rock()
             # print("********************************************************")
             # print(f"Grid: {self.width}, {self.height}   Tall: {self.tall}")
