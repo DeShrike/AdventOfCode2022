@@ -1,3 +1,4 @@
+from errno import ENETRESET
 from aoc import Aoc
 import itertools
 import math
@@ -133,6 +134,10 @@ class Day17Solution(Aoc):
         self.height = len(self.grid)
         self.windindex = 0
         self.rock_index = 0
+
+        checkheight = 2
+        checkstart = checkheight
+
         for _ in range(self.rocks_to_fall):
             self.fall_rock()
             # print("********************************************************")
@@ -142,16 +147,83 @@ class Day17Solution(Aoc):
             #         print(".#@$&%£"[self.grid[i][j]], end="")
             #     print("")
             # a = input()
+            checkstart += 1
+
         answer = self.tall
+
+        # for i in range(self.height - 1, -1, -1):
+        #     print(f"{i:5} ", end="")
+        #     for j in range(self.width):
+        #         print(".#@$&%£"[self.grid[i][j]], end="")
+        #     print("")
 
         self.ShowAnswer(answer)
 
     def PartB(self):
         self.StartPartB()
 
-        # Add solution here
+        """
+        # Test:
+        # 35 blokken in 53 lijnen
+        # 15 extra = 24 lijnen
+
+        r = self.rocks_to_fall // 35
+        totaal_lijnen = r * 53 + 24 + 1
+
+        # Echte:
+        # X blokken in 2534 lijnen
+        # X extra = 495 lijnen
+        """
 
         answer = None
+        self.width = 7
+        self.height = 0
+        self.tall = 0
+        self.grid = [[0 for _ in range(self.width)] for _ in range(7)]
+        self.height = len(self.grid)
+        self.windindex = 0
+        self.rock_index = 0
+
+        exta = 494
+        repeat = 2634
+
+        # exta = 25
+        # repeat = 53
+
+        extra_blocks = 0
+        repeat_blocks = 0
+        for rockcount in range(10_000):
+            self.fall_rock()
+            if self.tall > exta + 1:
+                if extra_blocks == 0:
+                    print(f"exta: {self.tall} {self.grid[self.tall-1]}")
+                    extra_blocks = rockcount - 1
+            if self.tall >= exta + repeat + 1:
+                if repeat_blocks == 0:
+                    print(self.grid[self.tall-1])
+                    print(f"Tall: {self.tall}   exta + repeat + 1:{exta + repeat + 1}")
+                    repeat_blocks = rockcount - extra_blocks
+                    break
+        
+        #fallen = extra_blocks + 
+
+        print(f"Extra Block: {extra_blocks}")
+        print(f"Repeat Block: {repeat_blocks}")
+
+        r = self.rocks_to_fall // repeat_blocks
+        totaal_lijnen = r * repeat + exta + 1
+
+        answer = totaal_lijnen - 1
+
+        # for i in range(self.height - 1, -1, -1):
+        #     for j in range(self.width):
+        #         print(".#@$&%£"[self.grid[i][j]], end="")
+        #     print("")
+
+        # Attempt 1: 1548899754056 is too low
+        # Attempt 2: 1548899754057 is too low
+        # Attempt 3: 1553982300128 is too low
+        # Attempt 4: 1554899645942 is wrong 
 
         self.ShowAnswer(answer)
 
