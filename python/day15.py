@@ -63,7 +63,7 @@ class Day15Solution(Aoc):
         Sensor at x=20, y=1: closest beacon is at x=15, y=3
         """
         self.inputdata = [line.strip() for line in testdata.strip().split("\n")]
-        self.row_to_test = 11
+        self.row_to_test = 10
         return 26
 
     def TestDataB(self):
@@ -99,7 +99,6 @@ class Day15Solution(Aoc):
             stukken.append(stuk)
         
         stukken.sort(key=lambda x: x[0])
-        # print(stukken)
         return stukken
 
     def calc_runs(self, stukken):
@@ -120,32 +119,21 @@ class Day15Solution(Aoc):
         self.StartPartA()
 
         sensors = self.parse_input()
-        # for ix, s in enumerate(sensors):
-        #     print(ix, s)
 
         stukken = self.calc_stukken(sensors)
         runs = self.calc_runs(stukken)
-
-        # print("Runs:")
-        # print(runs)
 
         positions = 0
         for run in runs:
             # print(f"{run} Run size: {run[1] - run[0] + 1}")
             positions += (run[1] - run[0] + 1)
 
-        # print(f"Positions A: {positions}")
-
         beaconsonrow = set()
         for s in sensors:
             if s.beacon[1] == self.row_to_test:
                 beaconsonrow.add(s.beacon)
 
-        # print(f"beaconsonrow: {beaconsonrow}")
-
         positions -= len(beaconsonrow)
-
-        # print(f"Positions B: {positions}")
 
         answer = positions
 
@@ -178,13 +166,12 @@ class Day15Solution(Aoc):
 
         answer = None
 
-        for y in range(self.rows_to_check):
+        for y in range(self.rows_to_check, 0, -1):
             if y % 1000 == 0:
                 print(y, end="\r")
             self.row_to_test = y
             stukken = self.calc_stukken(sensors)
             runs = self.calc_runs(stukken)
-            # print(y, runs)
             if len(runs) == 2:
                 if runs[0][1] == runs[1][0] - 2:
                     print(y, runs)
