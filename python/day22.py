@@ -16,6 +16,7 @@ class Day22Solution(Aoc):
         self.StartDay(22, "Monkey Map")
         self.ReadInput()
         self.PartA()
+        self.square_size = 50
         self.PartB()
 
     def Test(self):
@@ -26,6 +27,7 @@ class Day22Solution(Aoc):
         self.Assert(self.GetAnswerA(), goal)
 
         goal = self.TestDataB()
+        self.square_size = 4
         self.PartB()
         self.Assert(self.GetAnswerB(), goal)
 
@@ -53,15 +55,8 @@ class Day22Solution(Aoc):
 
     def TestDataB(self):
         self.inputdata.clear()
-        # self.TestDataA()    # If test data is same as test data for part A
-        testdata = \
-        """
-        1000
-        2000
-        3000
-        """
-        self.inputdata = [line.strip() for line in testdata.strip().split("\n")]
-        return None
+        self.TestDataA()
+        return 5031
 
     def map_char(self, char:str) -> int:
         if char == "X" or char == " ":
@@ -138,6 +133,18 @@ class Day22Solution(Aoc):
             for yy in range(mult):
                 canvas.set_pixel(x + xx, y + yy, color)
 
+    def init_canvas(self, canvas, mult, map):
+        colors = [(0, 0, 0), (255, 255, 255), (255, 0, 0)]
+        height = len(map)
+        width = max([len(row) for row in map])
+        for py in range(height):
+            for px in range(width):
+                if px >= len(map[py]):
+                    c = 0
+                else:
+                    c = map[py][px]
+                self.addsquare(canvas, px, py, mult, colors[c])
+
     def PartA(self):
         self.StartPartA()
 
@@ -148,51 +155,82 @@ class Day22Solution(Aoc):
         for y in range(height):
             while len(map[y]) < width:
                 map[y].append(0)
-        print(f"{width},{height}")
+
         x = map[0].index(1)
         y = 0
-        print(f"X: {x}  Y: {y}  Facing: {facing}")
+        print(f"Start: X: {x}  Y: {y}  Facing: {facing}")
 
         mult = 2
         canvas = Canvas(width * mult, height * mult)
-
-        colors = [(0, 0, 0), (255, 255, 255), (255, 0, 0)]
-        for py in range(height):
-            for px in range(width):
-                if px >= len(map[py]):
-                    c = 0
-                else:
-                    c = map[py][px]
-                self.addsquare(canvas, px, py, 2, colors[c])
+        self.init_canvas(canvas, mult, map)
 
         for step in steps:
             if type(step) is int:
                 for _ in range(step):
                     x, y = self.move(map, x, y, facing)
                     self.addsquare(canvas, x, y, 2, (0, 255, 0))
-                    # print(f"X: {x}  Y: {y}  Facing: {facing}")
-                    # a = input()
             elif step == "R":
                 facing = (facing + 1) % len(facings)
             elif step == "L":
                 facing = (facing - 1) % len(facings)
 
-        self.addsquare(canvas, 64, 0, 2, (0, 0, 255))
+        print(f"  End: X: {x}  Y: {y}  Facing: {facing}")
+        answer = 1000 * (y + 1) + 4 * (x + 1) + facing
 
         print(f"Saving")
-        canvas.save_PNG("day22.png")
-
-        print(f"X: {x}  Y: {y}  Facing: {facing}")
-        answer = 1000 * (y + 1) + 4 * (x + 1) + facing
+        canvas.save_PNG("day22a.png")
 
         self.ShowAnswer(answer)
 
     def PartB(self):
         self.StartPartB()
 
-        # Add solution here
+        map, steps = self.parse_input()
+        facing = 0
+        height = len(map)
+        width = max([len(row) for row in map])
+        for y in range(height):
+            while len(map[y]) < width:
+                map[y].append(0)
 
-        answer = None
+        x = map[0].index(1)
+        y = 0
+        print(f"Start: X: {x}  Y: {y}  Facing: {facing}")
+
+        mult = 2
+        canvas = Canvas(width * mult, height * mult)
+        self.init_canvas(canvas, mult, map)
+
+        if self.square_size == 4:
+            # Test cube
+            edges = [
+                { "fromq": (2, 0), "toq": (1, 0), "realq": (1, 1), "x": lambda x: y, "y": lambda y: 0, "facing": lambda f: f - 1 }
+                { "fromq": (1, 1), "toq": (1, 0), "realq": (2, 0), "x": lambda x: 0, "y": lambda y: x, "facing": lambda f: f }
+
+
+                { "fromq": (0, 0), "toq": (0, 0), "realq": (0, 0), "x": lambda x: x, "y": lambda y: y, "facing": lambda f: f }
+
+                { "A1": { "direction": (-1, 0), "quadrant": (1, 0), "swap": False, "rotate": -1 } }
+            ]
+        else:
+            # Real cube
+            pass
+
+        for step in steps:
+            if type(step) is int:
+                for _ in range(step):
+                    # x, y = self.move_on_cube(map, x, y, facing)
+                    self.addsquare(canvas, x, y, 2, (0, 255, 0))
+            elif step == "R":
+                facing = (facing + 1) % len(facings)
+            elif step == "L":
+                facing = (facing - 1) % len(facings)
+
+        print(f"  End: X: {x}  Y: {y}  Facing: {facing}")
+        answer = 1000 * (y + 1) + 4 * (x + 1) + facing
+
+        print(f"Saving")
+        canvas.save_PNG("day22b.png")
 
         self.ShowAnswer(answer)
 
