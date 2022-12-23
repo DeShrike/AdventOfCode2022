@@ -130,15 +130,21 @@ class Day21Solution(Aoc):
         print(m1)
         print(m2)
 
-        value = humn.value
-        for v in range(value-10, value + 10):
-            humn.value = v - 1_000_000_000
-            v1 = m1.get_value(monkeys)
-            v2 = m2.get_value(monkeys)
-
-            print(v1, ">" if v1 > v2 else "<", v2)
+        v2 = m2.get_value(monkeys)
 
         answer = None
+
+        value = 3_555_057_453_200
+        while value < 3_555_057_453_300:
+            humn.value = value
+            v1 = m1.get_value(monkeys)
+            print(f"{value}\t{v1}\t{v2}\t{v1 - v2}")
+            value += 1
+            if v1 == v2:
+                answer = value
+                break
+
+        # Attempt 1: 3555057453233 is too high
 
         self.ShowAnswer(answer)
 
