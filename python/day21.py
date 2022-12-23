@@ -34,6 +34,10 @@ class Monkey():
                 return mleft.get_value(monkeys) // mright.get_value(monkeys)
             return None
 
+    def equal(self, monkeys) -> bool:
+        mleft = [m for m in monkeys if m.name == self.left][0]
+        mright = [m for m in monkeys if m.name == self.right][0]
+        return mleft.get_value(monkeys) == mright.get_value(monkeys)
 
 class Day21Solution(Aoc):
 
@@ -120,7 +124,19 @@ class Day21Solution(Aoc):
         root = [m for m in monkeys if m.name == "root"][0]
         humn = [m for m in monkeys if m.name == "humn"][0]
         print(root)
+        m1 = [m for m in monkeys if m.name == root.left][0]
+        m2 = [m for m in monkeys if m.name == root.right][0]
         print(humn)
+        print(m1)
+        print(m2)
+
+        value = humn.value
+        for v in range(value-10, value + 10):
+            humn.value = v - 1_000_000_000
+            v1 = m1.get_value(monkeys)
+            v2 = m2.get_value(monkeys)
+
+            print(v1, ">" if v1 > v2 else "<", v2)
 
         answer = None
 
