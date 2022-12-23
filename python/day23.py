@@ -56,7 +56,7 @@ class Day23Solution(Aoc):
     def TestDataB(self):
         self.inputdata.clear()
         self.TestDataA()
-        return None
+        return 20
 
     def parse_input(self):
         elves = []
@@ -100,39 +100,33 @@ class Day23Solution(Aoc):
     def do_round(self, elves, dirindex: int):
         possible_moves = [] # [[oldpos, newpos], ... ]
         newelves = []
+        moved = False
+        elves_dict = { e: True for e in elves }
         for elve in elves:
-            # print(f"Elve at {elve}")
-            if self.has_neighbors(elves, elve) == False:
+            if self.has_neighbors(elves_dict, elve) == False:
                 newelves.append(elve)
             else:    
                 newpos = None
                 for diroffset in range(4):
                     ddd = dirs[(dirindex + diroffset) % len(dirs)]
                     newposses = [ (elve[0] + d[0], elve[1] + d[1]) for d in ddd]
-                    # print(f"Dir {dirindex} + {diroffset}")
-                    # print(newposses)
-                    if self.contains_elve(elves, newposses) == False:
+                    if self.contains_elve(elves_dict, newposses) == False:
                         newpos = (elve[0] + ddd[0][0], elve[1] + ddd[0][1])
-                        # print(f"Newposses are free: newpos > {newpos}")
                         possible_moves.append([elve, newpos])
-                        # a = input()
                         break
-                    # else:
-                    #     print("occupied")
-                    # a = input()
                 if newpos is None:
-                    # print("no new position")
                     newelves.append(elve)
 
         for pm in possible_moves:
             oe = pm[0]
             ne = pm[1]
             if len([ p for p in possible_moves if p[1] == ne ]) == 1:
+                moved = True
                 newelves.append(ne)
             else:
                 newelves.append(oe)
 
-        return newelves
+        return newelves, moved
 
     def PartA(self):
         self.StartPartA()
@@ -144,8 +138,8 @@ class Day23Solution(Aoc):
         # self.show_elves(elves)
 
         for round in range(10):
-            print(f"Round {round + 1}")
-            elves = self.do_round(elves, dirindex)
+            print(f"Round {round + 1}", end="\r")
+            elves, _ = self.do_round(elves, dirindex)
             dirindex = (dirindex + 1) % len(dirs)
             # print(f"== End of Round {round + 1} ==")
             # self.show_elves(elves)
@@ -167,9 +161,18 @@ class Day23Solution(Aoc):
     def PartB(self):
         self.StartPartB()
 
-        # Add solution here
-
         answer = None
+
+        dirindex = 0
+        elves = self.parse_input()
+
+        for round in range(10000):
+            print(f"Round {round + 1}", end="\r")
+            elves, moved = self.do_round(elves, dirindex)
+            dirindex = (dirindex + 1) % len(dirs)
+            if moved == False:
+                answer = round + 1
+                break
 
         self.ShowAnswer(answer)
 
