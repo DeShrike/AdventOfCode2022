@@ -36,4 +36,4 @@ def dirange(start, end=None, step:int=1):
     if end >= start:
         yield from range(start, end + 1, step)
     else:
-        yield from range(start, end - 1, step=-step)
+        yield from range(start, end - 1, -step)
